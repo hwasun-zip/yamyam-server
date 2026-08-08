@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+set -e
+cat > README.md <<'EOF'
 # yamyam-server
 
 날씨 기반 강남구 맛집 추천 **API 서버**.
@@ -48,3 +51,5 @@ gradle bootRun
 - [x] M6 k6 부하 테스트 (성능 실측)
 - [ ] 위경도 반경 검색 최적화 (공간 인덱스)
 - [ ] MySQL 전환 · Redis 캐시로 확장
+EOF
+echo "=== README 업데이트 완료! ==="
