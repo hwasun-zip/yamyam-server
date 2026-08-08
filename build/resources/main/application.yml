@@ -12,5 +12,9 @@ spring:
         jdbc:
           batch_size: 500
         order_inserts: true
+  cache:
+    type: caffeine
+    caffeine:
+      spec: expireAfterWrite=10m,maximumSize=1000
 server:
   port: 8080

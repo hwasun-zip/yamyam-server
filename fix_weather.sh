@@ -1,6 +1,8 @@
+#!/usr/bin/env bash
+set -e
+cat > src/main/java/com/yamyam/service/WeatherProvider.java <<'EOF'
 package com.yamyam.service;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -9,9 +11,6 @@ public class WeatherProvider {
 
     private final RestClient client = RestClient.create();
 
-    // 좌표를 약 1km 격자로 반올림한 값을 캐시 키로 사용 → 근처 좌표는 같은 캐시 재사용
-    @Cacheable(value = "weather",
-            key = "T(java.lang.Math).round(#lat*100)/100.0 + ',' + T(java.lang.Math).round(#lng*100)/100.0")
     public Weather getWeather(double lat, double lng) {
         try {
             String url = "https://api.open-meteo.com/v1/forecast"
@@ -20,16 +19,19 @@ public class WeatherProvider {
                     + "&wind_speed_unit=ms";
             OpenMeteo r = client.get().uri(url).retrieve().body(OpenMeteo.class);
             Current c = r.current();
-            System.out.println("[날씨 API 실제 호출] lat=" + lat + ", lng=" + lng);  // 캐시 미스일 때만 찍힘
             return new Weather(c.temperature_2m(), c.precipitation(),
                     c.relative_humidity_2m(), c.wind_speed_10m());
         } catch (Exception e) {
+            // 외부 API 실패 시 기본값 (graceful degradation)
             System.out.println("날씨 조회 실패, 기본값 사용: " + e.getMessage());
             return new Weather(20, 0, 60, 2);
         }
     }
 
+    // Open-Meteo 응답을 담는 그릇 (필드명이 JSON 키와 같으면 자동 매핑됨)
     public record OpenMeteo(Current current) {}
     public record Current(double temperature_2m, double precipitation,
                           double relative_humidity_2m, double wind_speed_10m) {}
 }
+EOF
+echo "=== WeatherProvider 수정 완료! 이제: gradle bootRun ==="
