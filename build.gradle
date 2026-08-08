@@ -23,4 +23,7 @@ dependencies {
 }
 
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
-tasks.named('test') { useJUnitPlatform() }
+test {
+    useJUnitPlatform()
+    testLogging { showStandardStreams = true; events "passed", "failed" }
+}
