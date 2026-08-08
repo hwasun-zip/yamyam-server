@@ -2,6 +2,8 @@ package com.yamyam.web;
 
 import com.yamyam.service.RecommendationService;
 import com.yamyam.service.RecommendationService.RecommendationResponse;
+import com.yamyam.service.Weather;
+import com.yamyam.service.WeatherProvider;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,20 +11,29 @@ import org.springframework.web.bind.annotation.*;
 public class RecommendationController {
 
     private final RecommendationService service;
-    public RecommendationController(RecommendationService service) { this.service = service; }
+    private final WeatherProvider weatherProvider;
+
+    public RecommendationController(RecommendationService s, WeatherProvider w) {
+        this.service = s; this.weatherProvider = w;
+    }
 
     @GetMapping("/recommendations")
     public RecommendationResponse recommend(
             @RequestParam double lat,
             @RequestParam double lng,
-            @RequestParam(defaultValue = "28") double temp,
-            @RequestParam(defaultValue = "0") double precip,
-            @RequestParam(defaultValue = "60") double humidity,
-            @RequestParam(defaultValue = "2") double wind,
+            @RequestParam(required = false) Double temp,
+            @RequestParam(required = false) Double precip,
+            @RequestParam(required = false) Double humidity,
+            @RequestParam(required = false) Double wind,
             @RequestParam(defaultValue = "3.0") double radiusKm,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "3") int topFoods
     ) {
-        return service.recommend(lat, lng, temp, precip, humidity, wind, radiusKm, limit, topFoods);
+        Weather weather = (temp != null)
+                ? new Weather(temp, precip != null ? precip : 0,
+                              humidity != null ? humidity : 60,
+                              wind != null ? wind : 2)
+                : weatherProvider.getWeather(lat, lng);   // 자동 실시간 조회
+        return service.recommend(lat, lng, weather, radiusKm, limit, topFoods);
     }
 }
