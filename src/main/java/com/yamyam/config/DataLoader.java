@@ -15,17 +15,28 @@ public class DataLoader implements CommandLineRunner {
 
     private final RestaurantRepository restaurantRepo;
     private final FoodWeatherModelRepository modelRepo;
+    private final CouponRepository couponRepo;
 
-    public DataLoader(RestaurantRepository r, FoodWeatherModelRepository m) {
-        this.restaurantRepo = r; this.modelRepo = m;
+    public DataLoader(RestaurantRepository r, FoodWeatherModelRepository m, CouponRepository c) {
+        this.restaurantRepo = r; this.modelRepo = m; this.couponRepo = c;
     }
 
     @Override
     public void run(String... args) throws Exception {
         loadModels();
         loadRestaurants();
+        seedCoupon();
         System.out.println("=== 데이터 적재 완료: 음식점 " + restaurantRepo.count()
                 + "곳, 회귀계수 " + modelRepo.count() + "개 ===");
+    }
+
+    private void seedCoupon() {
+        List<Restaurant> list = restaurantRepo.findByCategoryIn(List.of("냉면"));
+        Restaurant r = list.isEmpty() ? null : list.get(0);
+        Long rid = (r != null) ? r.getId() : null;
+        String rname = (r != null) ? r.getName() : "강남 맛집";
+        Coupon saved = couponRepo.save(new Coupon("강남 맛집 선착순 할인 쿠폰", 100, rid, rname, 30));
+        System.out.println("=== 쿠폰 준비 완료: ID=" + saved.getId() + ", '" + rname + "' 30% 할인, 선착순 100장 ===");
     }
 
     private void loadModels() throws Exception {

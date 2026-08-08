@@ -29,7 +29,7 @@ class CouponConcurrencyTest {
         int issued = repo.findById(id).orElseThrow().getIssuedCount();
         System.out.println("[락 없음] 쿠폰 받은 사람 = " + success.get()
                 + " (한도 " + LIMIT + "), 기록된 수량 = " + issued + " -> 초과 발급 + 카운터 붕괴!");
-        assertThat(success.get()).isGreaterThan(LIMIT);   // 한도보다 많은 사람이 받음 = 버그
+        assertThat(success.get()).isGreaterThan(LIMIT);
     }
 
     @Test
