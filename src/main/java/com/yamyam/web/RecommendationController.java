@@ -1,36 +1,28 @@
 package com.yamyam.web;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
+import com.yamyam.service.RecommendationService;
+import com.yamyam.service.RecommendationService.RecommendationResponse;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
 public class RecommendationController {
 
+    private final RecommendationService service;
+    public RecommendationController(RecommendationService service) { this.service = service; }
+
     @GetMapping("/recommendations")
     public RecommendationResponse recommend(
             @RequestParam double lat,
             @RequestParam double lng,
-            @RequestParam(defaultValue = "1.0") double radiusKm,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "28") double temp,
+            @RequestParam(defaultValue = "0") double precip,
+            @RequestParam(defaultValue = "60") double humidity,
+            @RequestParam(defaultValue = "2") double wind,
+            @RequestParam(defaultValue = "3.0") double radiusKm,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "3") int topFoods
     ) {
-        Weather weather = new Weather(31.2, 0.0, 55, 2.1);
-        List<FoodScore> topFoods = List.of(
-                new FoodScore("냉면", 1.83),
-                new FoodScore("팥빙수", 1.51)
-        );
-        List<RestaurantDto> restaurants = List.of(
-                new RestaurantDto("설빙 강남역지점", "팥빙수", 0.36),
-                new RestaurantDto("동아냉면", "냉면", 0.41)
-        );
-        return new RecommendationResponse(weather, topFoods, restaurants);
+        return service.recommend(lat, lng, temp, precip, humidity, wind, radiusKm, limit, topFoods);
     }
-
-    public record RecommendationResponse(Weather weather, List<FoodScore> topFoods, List<RestaurantDto> restaurants) {}
-    public record Weather(double temp, double precip, int humidity, double wind) {}
-    public record FoodScore(String food, double score) {}
-    public record RestaurantDto(String name, String category, double distanceKm) {}
 }
