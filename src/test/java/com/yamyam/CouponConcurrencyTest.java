@@ -23,7 +23,7 @@ class CouponConcurrencyTest {
 
     @Test
     void 락없으면_초과발급된다() throws Exception {
-        Long id = repo.save(new Coupon("여름쿠폰", LIMIT)).getId();
+        Long id = repo.save(new Coupon("강남 맛집 선착순 할인 쿠폰", LIMIT)).getId();
         AtomicInteger success = new AtomicInteger();
         runConcurrent(ATTEMPTS, () -> { if (service.issueNaive(id)) success.incrementAndGet(); });
         int issued = repo.findById(id).orElseThrow().getIssuedCount();
@@ -34,7 +34,7 @@ class CouponConcurrencyTest {
 
     @Test
     void 원자적UPDATE면_정확히_한도만_발급된다() throws Exception {
-        Long id = repo.save(new Coupon("여름쿠폰", LIMIT)).getId();
+        Long id = repo.save(new Coupon("강남 맛집 선착순 할인 쿠폰", LIMIT)).getId();
         AtomicInteger success = new AtomicInteger();
         runConcurrent(ATTEMPTS, () -> { if (service.issueSafe(id)) success.incrementAndGet(); });
         int issued = repo.findById(id).orElseThrow().getIssuedCount();
