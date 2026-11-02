@@ -1,0 +1,16 @@
+# 빌드 결과물
+build/
+.gradle/
+out/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 로컬 실행 도구 (k6는 각자 설치)
+k6
+
+# OS
+.DS_Store
