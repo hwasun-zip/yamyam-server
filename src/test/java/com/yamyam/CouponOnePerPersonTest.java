@@ -54,7 +54,7 @@ class CouponOnePerPersonTest {
     }
 
     @Test
-    void 150명이_각자_2번씩_동시에_눌러도_한도와_1인1매를_모두_지킨다() throws Exception {
+    void 백오십명이_각자_2번씩_동시에_눌러도_한도와_1인1매를_모두_지킨다() throws Exception {
         Long id = couponRepo.save(new Coupon("1인 1매 테스트", 100)).getId();
 
         Map<CouponIssueResult, Integer> r = runConcurrent(300, i -> () -> service.issueOnce(id, "person-" + (i % 150)));
