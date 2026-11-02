@@ -23,3 +23,10 @@ server:
 yamyam:
   # 사용자 식별값 해시용 비밀값. 실제 운영에서는 환경변수로 주입한다.
   user-key-salt: ${YAMYAM_USER_KEY_SALT:local-dev-salt}
+  api:
+    # 이 서버의 환경. test 서버는 test 키만, live 서버는 live 키만 받는다.
+    environment: ${YAMYAM_API_ENV:test}
+    # 제휴사 키 목록: "이름:종류:분당한도:키의 SHA-256 해시" (키 원문은 저장하지 않는다)
+    # 아래는 로컬 시연용: yk_test_local_demo(분당 30) / yk_live_local_demo / yk_test_load_demo(k6 부하 테스트용)
+    # 실제 운영에서는 환경변수 YAMYAM_API_KEYS로 주입한다.
+    keys: "${YAMYAM_API_KEYS:demo-test:test:30:96fcd51f6610ee8dee967ce7e21779ab1b1f7dd523a408ae644e6b7e115b4966,demo-live:live:600:5cde53accad36ba17256fcac9d318c79b0e972dba805fac8fce66f7b4a17412f,demo-load:test:1000000:24bcb25749e83c2135d528a880289cb6ad542d75a43f1f7a05a355a0155051e7}"
