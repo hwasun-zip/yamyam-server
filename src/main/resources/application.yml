@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:yamyam;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:yamyam;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000   # 동시 요청이 몰릴 때 행 잠금 대기 허용(ms)
     username: sa
     password:
     hikari:
@@ -20,3 +20,6 @@ spring:
       spec: expireAfterWrite=10m,maximumSize=1000
 server:
   port: 8080
+yamyam:
+  # 사용자 식별값 해시용 비밀값. 실제 운영에서는 환경변수로 주입한다.
+  user-key-salt: ${YAMYAM_USER_KEY_SALT:local-dev-salt}
